@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>namespace-row demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../iron-icon/iron-icon.html">
+    <link rel="import" href="../dcache-view-datatable-icons.html">
+
+    <link rel="import" href="../unit-cell.html">
+    <link rel="import" href="../editable-unit-cell.html">
+
+    <link rel="import" href="../table-row.html">
+
+    <style is="custom-style">
+      body {
+        margin: 0px;
+        background: #ececec;
+      }
+      /*#holder {
+        min-width:900px;
+        max-width: 1000px;
+        overflow: scroll;
+      }
+      #holder > .row {
+        width:100%;
+        background-color: white;
+      }*/
+
+      .row {
+        background-color: white;
+        width: 90% !important;
+      }
+      
+      unit-cell {
+        background-color: inherit;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.1;
+        color: rgba(0, 0, 0, 0.87);
+        box-sizing: border-box;
+      }
+      unit-cell > iron-icon {
+          width: 18px !important;
+          height: 18px !important;
+      }
+      table-row[header] {
+        display: -webkit-flex;
+        display: flex;
+        align-items: center;
+      }
+      table-row[header] * {
+        background-color: inherit;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.1;
+        color: rgba(0, 0, 0, 0.54);
+      }
+      .row .a {
+        min-width:25%;
+        max-width:25%;
+        padding-left: 24px;
+      }
+      .row .c {
+        min-width:2.5%;
+        max-width:2.5%;
+        padding-left: 24px;
+      }
+      .row .d {
+        min-width:2.5%;
+        max-width:2.5%;
+        padding-left: 56px;
+      }
+      .row .e {
+        min-width:20%;
+        max-width:20%;
+        padding-left: 56px;
+      }
+      .row .f {
+        min-width:20%;
+        max-width:20%;
+        padding-left: 56px;
+      }
+      .row .g {
+        padding-left: 56px;
+        min-width:20%;
+        max-width:20%;
+        padding-right: 24px;
+      }
+      /*@media all and (max-width: 500px) {
+        #holder {
+          min-width:450px;
+          max-width: 500px;
+          overflow: none;
+        }
+        #holder > .row {
+          width:450px;
+          background-color: white;
+          margin-left: 10px; 
+          --table-row-header-style:{
+            display: -webkit-flex;
+            display: flex;
+            background-color: white;
+            align-items: center;
+          };
+        }
+        .row .a {
+          min-width:100%;
+          max-width:100%;
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .c,.d,.e,.f,.g{
+          display:none;
+        }
+      }*/
+    </style>
+  </head>
+  <body>
+    <br>
+    <br>
+    <div style="border:1px solid red; width:90%; height:10px;"></div>
+
+    <table-row header class="row">
+      <unit-cell class="a">
+        <span>comments</span>
+      </unit-cell>
+      <unit-cell class="c">
+        <span>icon</span>
+      </unit-cell>
+      <unit-cell class="d">
+        <span>double icons</span>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>first name</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>middle name</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>last name</span>
+      </unit-cell>
+      <unit-cell class="a">
+        <span>comments</span>
+      </unit-cell>
+    </table-row>
+    <table-row class="row">
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+    </table-row>
+    <table-row class="row">
+      <unit-cell class="a">
+        <span>This defines the default behaviour for how flex items are laid out along the cross axis on the current line</span>
+      </unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+      <unit-cell class="a">
+        <span>This defines the default behaviour for how flex items are laid out along the cross axis on the current line</span>
+      </unit-cell>
+    </table-row>
+    <table-row selected class="row">
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+    </table-row>
+
+    <br>
+
+    <div id="holder">
+      <table-row header class="row">
+      <unit-cell class="a">
+        <span>comments</span>
+      </unit-cell>
+      <unit-cell class="c">
+        <span>icon</span>
+      </unit-cell>
+      <unit-cell class="d">
+        <span>double icons</span>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>first name</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>middle name</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>last name</span>
+      </unit-cell>
+    </table-row>
+    <table-row class="row">
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+    </table-row>
+    <table-row class="row">
+      <unit-cell class="a">
+        <span>This defines the default behaviour for how flex items are laid out along the cross axis on the current line</span>
+      </unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+    </table-row>
+    <table-row selected class="row">
+      <unit-cell class="a"><label>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+    </table-row>
+    </div>
+    
+    <!--<div>
+      <unit-cell class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+    <unit-cell class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+    </div>
+
+    <unit-cell class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+    <br>
+    <unit-cell class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+    </unit-cell>
+    <br>
+    <unit-cell class="a">
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+
+    <br>
+    <unit-cell class="a">
+      mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l
+    </unit-cell>
+
+    <h2>header</h2>
+
+    <unit-cell header sorting class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+    <br>
+    <unit-cell header class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+    </unit-cell>
+    <br>
+    <unit-cell header class="a">
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+
+    <br>
+    <unit-cell header class="a">
+      <div>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</div>
+    </unit-cell>-->
+
+    
+    <!--<table-row class="row">
+      <unit-cell class="a"><label>label</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+    </table-row>
+
+    <br>
+
+    <unit-cell header class="a">
+      <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      <span>mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</span>
+    </unit-cell>
+    <br>
+    <unit-cell header class="a">mer.polymer-vscode-plugin-0.0.2/server/node_modules/polymer-analyzer/l</unit-cell>
+    <table-row class="row">
+      <unit-cell class="a"><label>label</label></unit-cell>
+      <unit-cell class="c">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="d">
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+        <iron-icon icon="namespace-row-icons:edit"></iron-icon>
+      </unit-cell>
+      <unit-cell class="e">
+        <span>olufemi</span>
+      </unit-cell>
+      <unit-cell class="f">
+        <span>segun</span>
+      </unit-cell>
+      <unit-cell class="g">
+        <span>adeyemi</span>
+      </unit-cell>
+    </table-row>-->
+    
+  </body>
+</html>

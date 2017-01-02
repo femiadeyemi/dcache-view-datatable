@@ -1,0 +1,91 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../dcache-view-datatable.html">
+
+<dom-module id="x-element">
+    <style>
+        dcache-view-datatable {
+            width: 100vw;
+        }
+        dcache-view-datatable > table-row, dcache-view-datatable > table-row[header] {
+            width: 100%;
+        }
+        table-row .a0 {
+            max-width: 5%;
+            min-width: 5%;
+        }
+        table-row .a {
+            max-width: 30%;
+            min-width: 30%;
+        }
+        table-row .b {
+            max-width: 30%;
+            min-width: 30%;
+        }
+        table-row .b2 {
+            max-width: 15%;
+            min-width: 15%;
+        }
+        table-row .c {
+            max-width: 5%;
+            min-width: 5%;
+        }
+    </style>
+    <template>
+      <iron-ajax url="dummy.json" last-response="{{data}}" auto></iron-ajax>
+      <dcache-view-datatable data='[[data]]' 
+            column-header='[
+                {"name":"index","class":"a0","tooltips":"index","key":"index","dataType":"number"}, 
+                {"name":"name","class":"a","tooltips":"user full name","key":"name","dataType":"String", "main":true}, 
+                {"name":"address","class":"b","tooltips":"address","key":"address","dataType":"String"},
+                {"name":"phone","class":"b2","tooltips":"phone","key":"phone","dataType":"String"},
+                {"name":"age","class":"c","tooltips":"user age","key":"age","dataType":"number"}
+            ]'>
+        <template>
+          <table-row selected$="[[_computedClass(selected)]]">
+            <unit-cell class="a0" number>
+              <span>[[data.index]]</span>
+            </unit-cell>
+            <unit-cell class="a" main>
+              <span>[[data.name]]</span>
+            </unit-cell>
+            <unit-cell class="b" actionable>
+              <span>[[data.address]]</span>
+              <paper-icon-button icon="dcache-view-datatable-icons:edit" 
+                                 title="click to edit file name" 
+                                 on-tap="_openDialog"></paper-icon-button>
+            </unit-cell>
+            <unit-cell class="b2">
+              <span>[[data.phone]]</span>
+            </unit-cell>
+            <unit-cell class="c" number>
+              <span>[[data.age]]</span>
+            </unit-cell>
+          </table-row>
+        </template>
+      </dcache-view-datatable>
+    </template>
+    <script>
+        Polymer({
+            is: 'x-element',
+            _openDialog: function(e)
+            {
+                var x = Polymer.dom(this.root).querySelector('dcache-view-datatable');
+                var event = e;
+                x.inlineEditorDialogBox(event);
+                x.addEventListener('edit', function(e) {
+                    console.log(e.detail.newValue);
+                })
+            },
+            _computedClass: function(isSelected) 
+            {
+                if (isSelected) {
+                return true;
+                } else {
+                    return false;
+                }
+            },
+        })
+    </script>
+</dom-module>

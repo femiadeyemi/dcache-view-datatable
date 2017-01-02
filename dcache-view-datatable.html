@@ -1,0 +1,583 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
+
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-spinner/paper-spinner.html">
+
+<link rel="import" href="table-row.html">
+<link rel="import" href="unit-cell.html">
+<link rel="import" href="dcache-view-datatable-icons.html">
+
+<!--
+`dcache-view-datatable`
+
+
+@demo demo/index.html 
+-->
+<dom-module id="dcache-view-datatable">
+    <template>
+        <style>
+            :host{
+                display: block;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            iron-list {
+                flex: 1 1 auto;
+            }
+            
+            #footer {
+                order: 4;
+                flex: 1 100%;
+                min-height: 56px;
+                max-height: 56px;
+                background: white;
+                padding-right: 14px;
+                border-top: 2px solid #e8e8e8; 
+            }
+            #footer > #innerFooter {
+                display: flex;
+                align-content: center;
+                justify-content: flex-end;
+                min-height: 56px;
+                max-height: 56px;
+            }
+            #innerFooter > * {
+                align-self: center;
+            }
+            #innerFooter > span {
+                font-size: 12px;
+                font-weight: 400;
+                color: rgba(0, 0, 0, 0.54) !important;
+            }
+            #innerFooter > paper-icon-button {
+                color: rgba(0, 0, 0, 0.54) !important;
+            }
+            #innerFooter > paper-icon-button[disabled] {
+                color: rgba(0, 0, 0, 0.26) !important;
+            }
+
+            :host ::content table-row, table-row {
+                background-color: white;
+                width: 100% !important;
+                padding-left: 24px !important; 
+                padding-right: 24px !important; 
+            }
+            :host ::content table-row unit-cell, unit-cell {
+                background-color: inherit;
+                font-size: 13px;
+                font-weight: 400;
+                /*line-height: 1.1;*/
+                color: rgba(0, 0, 0, 0.87);
+                box-sizing: border-box;
+            }
+            unit-cell > iron-icon {
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            :host ::content table-row unit-cell:not([main]) + unit-cell:not([main]) {
+                margin-left: 56px;
+            }
+            :host ::content table-row unit-cell[main] {
+                margin-left: 24px;
+                margin-right: 24px;
+            }
+            
+            table-row[header] {
+                display: -webkit-flex;
+                display: flex;
+                align-items: center;
+            }
+            table-row[header] span {
+                background-color: inherit;
+                font-size: 12px;
+                font-weight: 500;
+                /*line-height: 1.1;*/
+                color: rgba(0, 0, 0, 0.54);
+                vertical-align: middle;
+            }
+            table-row[header] iron-icon {
+                background-color: inherit;
+                color: rgba(0, 0, 0, 0.26);
+                transition: transform .2s linear, width .2s linear, color .2s linear;
+            }
+            :host ::content table-row unit-cell[number] {
+                justify-content: flex-end !important;
+            }
+            :host ::content table-row unit-cell[actionable] {
+                display: inline-flex;
+            }
+            :host ::content table-row unit-cell[actionable] span {
+                flex: 1;
+            }
+            :host ::content table-row unit-cell[actionable] paper-icon-button {
+                color: rgba(0, 0, 0, 0.54);
+                --paper-icon-button-hover: {
+                    color: #f09300;
+                };
+            }
+            :host ::content table-row unit-cell[actionable] paper-icon-button > iron-icon {
+                width: 18px !important;
+                height: 18px !important;
+            }
+            .hide {
+                display: none;
+            }
+            table-row[header] .activeIcon {
+                display: -webkit-inline-flex;
+                color: rgba(0, 0, 0, 0.87);
+                width: 16px !important;
+                height: 16px !important;
+            }
+            table-row[header] .activeSpan {
+                color: rgba(0, 0, 0, 0.87);
+            }
+            table-row[header] .hoverIcon {
+                color: rgba(0, 0, 0, 0.38);
+                width: 16px !important;
+                height: 16px !important;
+            }
+            .sort {
+                transform: rotate(180deg);
+            }
+
+            :host ::content table-row[header] paper-tooltip ~ unit-cell:not([main]) {
+                margin-left: 56px;
+            }
+            :host ::content table-row[header] unit-cell[main] {
+                margin-left: 24px;
+                margin-right: 24px;
+            }
+            paper-dropdown-menu.custom {
+                
+                width: 50px !important;
+                --paper-input-container-label: {
+                    color: rgba(0, 0, 0, 0.54) !important;
+                    font-size: 12px;
+                };
+                --paper-input-container-input: {
+                    color: rgba(0, 0, 0, 0.54) !important;
+                    font-size: 12px;
+                }
+                /* no underline */
+                --paper-input-container-underline: {
+                    display: none;
+                };
+            }
+
+            paper-spinner {
+                width: 28px!important;
+                position:absolute;
+                top: 30%;
+                right: 50%;
+                bottom: auto;
+                left: auto;
+                z-index:4;
+            }
+        </style>
+        <paper-spinner active></paper-spinner>
+        <div id="header">
+            <table-row id="hd" header>
+                <template is="dom-repeat" items="{{columnHeader}}">
+                    <unit-cell id="{{item.key}}" on-tap="_sort" on-mouseover="_over" on-mouseout="_out">
+                        <iron-icon class="hide" icon="dcache-view-datatable-icons:sort"></iron-icon>
+                        <span>{{item.name}}</span>
+                    </unit-cell> 
+                </template>
+            </table-row>
+            <paper-tooltip for="{{key}}" offset="0">{{tooltips}}</paper-tooltip>
+        </div>
+        
+        <iron-list id="list" items="[[currentViewpointData]]" as="data" 
+                    selection-enabled selected-items="{{selectedItems}}">
+            <content></content>
+        </iron-list>
+        <div id="footer">
+            <div id="innerFooter">
+                <span style="margin-right: 14px;">Rows per pages:</span>
+                <paper-dropdown-menu id="noOfRows" on-iron-select="_noOfRows"
+                        class="custom" label="100" vertical-align="bottom" 
+                        horizontal-align="left" no-label-float selected="1">
+                    <paper-listbox class="dropdown-content">
+                        <paper-item>100</paper-item>
+                        <paper-item>500</paper-item>
+                        <paper-item>1000</paper-item>
+                        <paper-item>1500</paper-item>
+                        <paper-item>2000</paper-item>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <span style="margin-left:32px;">
+                    [[sometext]]
+                </span>
+                <paper-icon-button icon="dcache-view-datatable-icons:first" id="first" disabled on-tap="_first"
+                                   style="margin-left:32px; margin-right:0;"></paper-icon-button>
+                <paper-icon-button icon="dcache-view-datatable-icons:previous" id="previous" disabled on-tap="_previous"
+                                   style="margin-left:0; margin-right:0px;"></paper-icon-button>
+                <paper-icon-button icon="dcache-view-datatable-icons:next" id="next" on-tap="_next"
+                                   style="margin-left:0; margin-right:0;"></paper-icon-button>
+                <paper-icon-button icon="dcache-view-datatable-icons:last" id="last" on-tap="_last"
+                                   style="margin-left:0; margin-right:0;"></paper-icon-button>
+            </div>
+        </div>
+        <paper-dialog id="dialogBox" 
+                      horizontal-align="left" vertical-align="top" 
+                      style="margin:0; width:400px; background-color:#eee;">
+            <div style="padding-top:0;padding-bottom:0;margin-top:0;margin-left:0;margin-right:0;">
+                <iron-a11y-keys target="[[target]]" 
+                                keys="enter" on-keys-pressed="_edit"></iron-a11y-keys>
+                <paper-input id="input" value="{{newValue}}" required autofocus></paper-input>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'dcache-view-datatable',
+            properties: {
+                target: {
+                    type: Object,
+                    value: function() {
+                        return this.$.input;
+                    }
+                },
+                data: {
+                    type: Array,
+                    notify: true,
+                    observer: '_changedData'
+                },
+                currentViewpointData: {
+                    type: Array,
+                    value: [],
+                    notify: true,
+                },
+                selectedItems: {
+                    type: Object,
+                    value: null,
+                    notify: true,
+                    observer: '_selectedItemsChanged'
+                },
+                columnHeader: {
+                    type: Array,
+                    notify: true,
+                },
+                _obj: {
+                    type: Object
+                },
+                sometext: {
+                    type: String,
+                    notify: true
+                },
+            },
+            
+            created: function()
+            {
+                this._changedDataCounter = 0;
+                this._iStart = 0;
+                this._iEnd = 100;
+                this.statusMessages = [{"time":new Date().toLocaleTimeString(),"message": "datatable setup: initialising necessary configuration"}];
+            },
+            ready: function() 
+            {
+                this.$.list.dataHost = this.dataHost;
+                
+                if (this.dataHost.tagName != "TEMPLATE") {
+                    this.$.hd.classList.add(this.dataHost.tagName.toLowerCase());
+                }
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    var ucs = this.$.hd.querySelectorAll('unit-cell');
+                    const length = ucs.length;
+                    for (var i=0; i<length;i++) {
+                        if (this.dataHost.tagName != "TEMPLATE") {
+                            ucs[i].classList.add(this.columnHeader[i].class, this.dataHost.tagName.toLowerCase());
+                        } else {
+                            ucs[i].classList.remove("style-scope","dcache-view-datatable")
+                            ucs[i].classList.add(this.columnHeader[i].class);
+                        }
+
+                        if (this.columnHeader[i].main == true) {
+                            ucs[i].setAttribute("main", true);
+                        }
+                    }
+                }.bind(this));
+            },
+
+            _changedData: function()
+            {
+                this._dataLoadingWithView(this.data);
+            },
+            _dataLoadingWithView: function(data)
+            {
+                if (this._changedDataCounter == 0) {
+                    Polymer.dom(this.root).querySelector('paper-spinner').active = true;
+                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "loading data ..."});
+                } else {
+                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "change in the main data set, loading ..."});
+                }
+
+                if (data === undefined || data == null) {
+                    Polymer.dom(this.root).querySelector('paper-spinner').active = false;
+                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Error: loading the data or no data attached"});
+                    this.fire('errorLoadingData', {});
+                } else if (data.length == 0) {
+                    Polymer.dom(this.root).querySelector('paper-spinner').active = false;
+                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Done! Data loaded. Empty data"});
+                    this.currentViewpointData = [];
+                    this.fire('emptyData', {});
+                } else {
+                    if (data.length > 100) {
+                        this.currentViewpointData = data.slice(this._iStart, this._iEnd);
+                        this._preferOrder(this.currentViewpointData);
+                        //this.sometext = "1-100 of " + this.data.length;
+                    } else {
+                        this.currentViewpointData = data;
+                        this._preferOrder(this.currentViewpointData);
+                        // this.sometext = "1-" + this.data.length;
+                        this.$.next.disabled = true;
+                        this.$.last.disabled = true;
+                        this.$.first.disabled = true;
+                        this.$.previous.disabled = true;
+                    }
+                    Polymer.dom(this.root).querySelector('paper-spinner').active = false;
+                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Done! data loaded"});
+                }
+                this._changedDataCounter++
+            },
+
+            _sort: function(e) 
+            {
+                e.stopPropagation();
+                
+                var sortIcons = this.$.hd.querySelectorAll('iron-icon');
+
+                [].forEach.call(sortIcons, function(icon) {
+                    icon.classList.add("hide");
+                    icon.classList.remove("activeIcon");
+                    icon.parentNode.querySelector('span').classList.remove("activeSpan");
+                });
+                var selector = '#'+e.model.item.key;
+                this.$.hd.querySelector(selector).querySelector('iron-icon').classList.remove("hide");
+                this.$.hd.querySelector(selector).querySelector('iron-icon').classList.add("activeIcon");
+                this.$.hd.querySelector(selector).querySelector('span').classList.add("activeSpan");
+                
+                var columnKey = e.model.item.key;
+                var type = e.model.item.dataType;
+                
+                if (this._obj == null || this._obj == this.$.hd.querySelector(selector)) {
+                    if (this._counter == 0) {
+                        this._compare(columnKey, type, this.$.list.items);
+                    } else {
+                        this.$.list.items.reverse();
+                        this.$.hd.querySelector(selector).querySelector('iron-icon').classList.toggle("sort");
+                    }
+                    this._counter++;
+                } else {
+                    this._counter = 0;
+                    this._compare(columnKey, type, this.$.list.items);
+                    this._counter++;
+                }
+                this._obj = this.$.hd.querySelector(selector);
+                document.querySelector('iron-list').fire('iron-resize');
+
+                //TODO: Consider putting the above and the sorting stuff below together
+                this._sortingStatus = {};            
+                if( this._cColumn == e.model.item.key ) {
+                    if (this._counter%2 == 0 ){
+                        this._sortingStatus['order'] = 'desc';
+                    } else {
+                        this._sortingStatus['order'] = 'asc';
+                    }
+                } else {
+                    this._sortingStatus['order'] = 'asc';
+                }
+                this._sortingStatus['columnName'] = e.model.item.key;
+                this._sortingStatus['dataType'] = e.model.item.dataType;
+                this._cColumn = e.model.item.key;
+                
+                e.stopPropagation();
+            },
+            _over: function(e) 
+            {
+                e.stopPropagation();
+                var id = '#'+e.model.item.key;
+                this.key = e.model.item.key;
+                this.tooltips = e.model.item.tooltips;
+                this.$.hd.querySelector(id).querySelector('iron-icon').classList.remove("hide");
+                this.$.hd.querySelector(id).querySelector('iron-icon').classList.add("hoverIcon");
+                e.stopPropagation();
+            },
+            _out: function(e) 
+            {
+                e.stopPropagation();
+                var id = '#'+e.model.item.key;
+                this.$.hd.querySelector(id).querySelector('iron-icon').classList.add("hide");
+                this.$.hd.querySelector(id).querySelector('iron-icon').classList.remove("hoverIcon");
+                e.stopPropagation();
+            },
+            _compare: function(columnKey, dataType, data) 
+            {
+                return data.sort(function(a, b) {
+                    var A;
+                    var B;
+                    if (dataType == "number") {
+                        A = a[columnKey];
+                        B = b[columnKey];
+                    } else {
+                        A = a[columnKey].toUpperCase();
+                        B = b[columnKey].toUpperCase();
+                    }
+                    
+                    if (A < B) {
+                        return -1;
+                    } else if (A > B) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+            },
+
+            _preferOrder: function(arr)
+            {
+                if ( this._sortingStatus === undefined) {
+                    this.currentViewpointData = arr;
+                } else {
+                    var name = this._sortingStatus.columnName; 
+                    var type =this._sortingStatus.dataType; 
+                    if (this._sortingStatus.order == 'asc') {
+                        this.currentViewpointData = this._compare(name, type, arr);
+                    } else {
+                        this.currentViewpointData = this._compare(name, type, arr).reverse();
+                    }
+                }
+            },
+            _noOfRows: function(e) 
+            {
+                this._noOfRowsPerPage = e.detail.item.innerText;
+                this._iEnd = +this._iStart + +this._noOfRowsPerPage;
+                
+                var arr = this.data.slice(this._iStart, this._iEnd);
+                this._preferOrder(arr);
+
+                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                if ( +this._noOfRowsPerPage >= this.data.length && this.data.length <= this._iEnd ) {
+                    this.$.next.disabled = true;
+                    this.$.last.disabled = true;
+                } else {
+                    this.$.next.disabled = false;
+                    this.$.last.disabled = false;
+                }
+            },
+            _first: function()
+            {
+                this._noOfRowsPerPage == null ? this._noOfRowsPerPage = 100 : this._noOfRowsPerPage;
+                this._iStart = 0;
+                this._iEnd = this._noOfRowsPerPage;
+                var arr = this.data.slice(this._iStart, this._iEnd);
+                this._preferOrder(arr);
+
+                this.$.next.disabled = false;
+                this.$.last.disabled = false;
+                this.$.first.disabled = true;
+                this.$.previous.disabled = true;
+
+                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+            },
+            _last: function()
+            {
+                this._noOfRowsPerPage == null ? this._noOfRowsPerPage = 100 : +this._noOfRowsPerPage;
+
+                var x = this._noOfRowsPerPage * Math.floor(this.data.length/this._noOfRowsPerPage);
+
+                if (x == this.data.length) {
+                    this._iStart = this.data.length - this._noOfRowsPerPage;
+                } else {
+                    this._iStart = x;
+                }
+                this._iEnd = +this._iStart + this._noOfRowsPerPage;
+                var arr = this.data.slice(this._iStart, this._iEnd);
+                this._preferOrder(arr);
+                
+                this.$.next.disabled = true;
+                this.$.last.disabled = true;
+                this.$.first.disabled = false;
+                this.$.previous.disabled = false;
+                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this.fire('next', {});
+            },
+            _next: function()
+            {
+                this._noOfRowsPerPage == null ? this._noOfRowsPerPage = 100 : this._noOfRowsPerPage;
+                this._iStart = +this._iEnd;
+                this._iEnd = +this._iEnd + +this._noOfRowsPerPage;
+                var arr = this.data.slice(this._iStart, this._iEnd);
+                this._preferOrder(arr);
+                
+                if ( this._iEnd >= this.data.length-1 ) {
+                    this.$.next.disabled = true;
+                    this.$.last.disabled = true;
+                }
+                this.$.first.disabled = false;
+                this.$.previous.disabled = false;
+
+                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this.fire('next', {});
+            },
+            _previous: function()
+            {
+                this._noOfRowsPerPage == null ? this._noOfRowsPerPage = 100 : +this._noOfRowsPerPage;
+                this._iEnd = +this._iStart;
+                this._iStart = +this._iStart - +this._noOfRowsPerPage;
+                var arr = this.data.slice(this._iStart, this._iEnd);
+                this._preferOrder(arr);
+                
+                if (this._iStart == 0) {
+                    this.$.first.disabled = true;
+                    this.$.previous.disabled = true;
+                }
+                this.$.next.disabled = false;
+                this.$.last.disabled = false;
+
+                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+            },
+            inlineEditorDialogBox: function(event) 
+            {
+                var dialog = this.$.dialogBox;
+                var value;
+                var element = event.target.parentNode;
+                if (element.tagName.toLowerCase() == 'unit-cell') {
+                    value = element.querySelector('span').textContent;
+                } else {
+                    element = element.parentElement;
+                    if (element.tagName.toLowerCase() == 'unit-cell') {
+                        value = element.querySelector('span').textContent;
+                    } else if(element.parentElement.tagName.toLowerCase() == 'unit-cell'){
+                        element = element.parentElement;
+                        value = element.querySelector('span').textContent;
+                    }
+                }
+                dialog.positionTarget = element;
+                this.newValue = value;
+                dialog.open();
+            },
+            _edit: function(e, detail)
+            {
+                this.fire('edit', {newValue: this.newValue});
+            },
+            _selectedItemsChanged: function(e)
+            {
+                this.updateStyles();
+            },
+        });
+    </script>
+</dom-module>

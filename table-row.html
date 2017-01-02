@@ -1,0 +1,63 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--
+`table-row`
+
+
+@demo demo/index.html 
+-->
+<dom-module id="table-row">
+    <template>
+        <style>
+            :host {
+                display: block;
+                width: var(--table-row-width);
+                height:48px !important;
+                padding: 2px;
+                border-bottom: 1px solid #ddd;
+                overflow:hidden; 
+                box-sizing: border-box;
+                @apply(--table-row-style);
+            }
+            :host([header]) {
+                height:56px !important;
+            }
+            
+            :host > #selectline {
+                border: 2px solid transparent;
+                border-radius: 3px;
+                height: 40px;
+                width: calc(100% - 6px);
+                transition: all 0.3s ease-in-out;
+                @apply(--table-row-selectline-style);
+            }
+             #selectline > #table-row {
+                width:100%;
+                display: -webkit-flex;
+                display: flex;
+                flex-wrap: nowrap;
+                height: 40px;
+            }
+            :host([selected]){
+                --table-row-selectline-style: {
+                    border: 2px solid #0b9de2;
+                };
+            }
+            :host([selected]):hover{
+                background-color:#F5F5F5; 
+            }
+            :host:not([header]):hover {
+                background-color:#EEEEEE; 
+            }
+        </style>
+        <div id="selectline">
+            <div id="table-row">
+                <content></content>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'table-row',
+        });
+    </script>
+</dom-module>

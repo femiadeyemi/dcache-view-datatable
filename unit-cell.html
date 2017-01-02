@@ -1,0 +1,33 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<!--
+`unit-cell`
+
+
+@demo demo/index.html 
+-->
+<dom-module id="unit-cell">
+    <template>
+        <style>
+           :host {
+               height:40px !important;
+               display: inline-flex;
+               display: -webkit-flex;
+               -webkit-align-items: center;
+               align-items: center;
+           }
+           :host ::content * {
+               min-width:10px;
+               white-space: nowrap;
+               overflow: hidden;
+               text-overflow: ellipsis;
+           }
+        </style>
+        <content></content>
+    </template>
+    <script>
+        Polymer({
+            is: 'unit-cell',
+        });
+    </script>
+</dom-module>
