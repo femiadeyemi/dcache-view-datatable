@@ -20,6 +20,46 @@
 <!--
 `dcache-view-datatable`
 
+A pseudo-_[material design](https://material.io/guidelines/components/data-tables.html)_ implementation of 
+data table. 
+
+
+
+### Usage:
+
+Here is a simple example of how to use `<dcache-view-datatable/>` 
+```html
+    <dcache-view-datatable 
+            data='[{"id": 1, "name": "Minerva Woods"}, 
+                    {"id": 2, "name": "Peters Shaw"},
+                    {"id": 3, "name": "Mcclure Conner"}]'
+            column-header='[
+                {"name":"id","class":"col-1","tooltip":"users unique identification number","key":"id","dataType":"number"}, 
+                {"name":"name","class":"col-2","tooltip":"user full name","key":"name","dataType":"String", "main":true}, 
+            ]'>
+        <template>
+            <table-row>
+                <unit-cell class="col-1" number>
+                    <span>[[data.id]]</span>
+                </unit-cell>
+                <unit-cell class="col-2" main>
+                    <span>[[data.name]]</span>
+                </unit-cell>
+            </table-row>
+        </template>
+    </dcache-view-datatable>
+```
+
+### Styling:
+Althought, `dcache-view-datatable` can be use without any styling, for better result, it is hightly 
+recommended that a css style that will be responsive be provided. 
+
+Example of datatable that will be responsive to both desktop and mobile:
+```css
+
+
+```
+
 
 @demo demo/index.html 
 -->
@@ -160,7 +200,6 @@
                 margin-right: 24px;
             }
             paper-dropdown-menu.custom {
-                
                 width: 50px !important;
                 --paper-input-container-label: {
                     color: rgba(0, 0, 0, 0.54) !important;
@@ -170,7 +209,6 @@
                     color: rgba(0, 0, 0, 0.54) !important;
                     font-size: 12px;
                 }
-                /* no underline */
                 --paper-input-container-underline: {
                     display: none;
                 };
@@ -196,10 +234,10 @@
                     </unit-cell> 
                 </template>
             </table-row>
-            <paper-tooltip for="{{key}}" offset="0">{{tooltips}}</paper-tooltip>
+            <paper-tooltip for="{{key}}" offset="0">{{tooltipText}}</paper-tooltip>
         </div>
         
-        <iron-list id="list" items="[[currentViewpointData]]" as="data" 
+        <iron-list id="list" items="[[_currentViewpointData]]" as="data" 
                     selection-enabled selected-items="{{selectedItems}}">
             <content></content>
         </iron-list>
@@ -218,7 +256,7 @@
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <span style="margin-left:32px;">
-                    [[sometext]]
+                    [[_currntRangeDisplayText]]
                 </span>
                 <paper-icon-button icon="dcache-view-datatable-icons:first" id="first" disabled on-tap="_first"
                                    style="margin-left:32px; margin-right:0;"></paper-icon-button>
@@ -244,39 +282,82 @@
         Polymer({
             is: 'dcache-view-datatable',
             properties: {
+                /**
+                 * @private 
+                 */
                 target: {
                     type: Object,
                     value: function() {
                         return this.$.input;
                     }
                 },
+
+                /**
+                 * An array of objects containing the data to be displayed in the data-table.
+                 */
                 data: {
                     type: Array,
                     notify: true,
                     observer: '_changedData'
                 },
-                currentViewpointData: {
+                _currentViewpointData: {
                     type: Array,
                     value: [],
                     notify: true,
                 },
+
+                /**
+                 *  This is an object that contains the selected items.
+                 */
                 selectedItems: {
                     type: Object,
                     value: null,
                     notify: true,
                     observer: '_selectedItemsChanged'
                 },
+
+                /**
+                 * Use to setup the header row of the table. The column-header property of 
+                 * dcache-view-datatable is a JSON array and each object must correspond to 
+                 * the column, meaning the first object will be used to set-up the first   
+                 * column. Hence, the number of objects must be equal to the number of the  
+                 * columns.
+                 * 
+                 * 
+                 * 
+                 * Each object of the array can contain the following:
+                 *
+                 * | keys       | definition   | value data type  | required  | default value  |
+                 * |------------|---------------------------------------------|-------|-----------|----------------:|
+                 * | *name*    | The column name that will be display to the user. | String | mandatory | - |
+                 * | *class*    | The css class name of the column | String | mandatory | - |
+                 * | *tooltip*  | On mouse over, the text that will be display. Expecially useful for a column header with a long name. | String | optional | ' ' |
+                 * | *key*      | The key for the column in the main `data` (see the data property). Also, use for setting the coulum `ID` | String | mandatory | - |
+                 * | *dataType* | The data type of the column, this can either be a number or a string. | String | optional | string |
+                 * | *main*     | Use to inidicate that the column is main.  | Boolean | optional | false
+                 */
                 columnHeader: {
                     type: Array,
-                    notify: true,
+                    value: [],
+                    notify: true
                 },
                 _obj: {
                     type: Object
                 },
-                sometext: {
+                _currntRangeDisplayText: {
                     type: String,
                     notify: true
                 },
+
+                /**
+                 * An array that contains progress information (with timestamp) about the datatable.
+                 */
+                log: {
+                    type: Array,
+                    value: [],
+                    notify: true,
+                    readOnly: true
+                }
             },
             
             created: function()
@@ -284,29 +365,34 @@
                 this._changedDataCounter = 0;
                 this._iStart = 0;
                 this._iEnd = 100;
-                this.statusMessages = [{"time":new Date().toLocaleTimeString(),"message": "datatable setup: initialising necessary configuration"}];
             },
             ready: function() 
             {
                 this.$.list.dataHost = this.dataHost;
+                this.log.push({"time":new Date().toLocaleTimeString(),
+                    "message": "datatable setup: initialising necessary configuration"});
                 
                 if (this.dataHost.tagName != "TEMPLATE") {
                     this.$.hd.classList.add(this.dataHost.tagName.toLowerCase());
                 }
 
                 Polymer.RenderStatus.afterNextRender(this, function() {
-                    var ucs = this.$.hd.querySelectorAll('unit-cell');
-                    const length = ucs.length;
-                    for (var i=0; i<length;i++) {
-                        if (this.dataHost.tagName != "TEMPLATE") {
-                            ucs[i].classList.add(this.columnHeader[i].class, this.dataHost.tagName.toLowerCase());
-                        } else {
-                            ucs[i].classList.remove("style-scope","dcache-view-datatable")
-                            ucs[i].classList.add(this.columnHeader[i].class);
-                        }
+                    if (this.columnHeader.length == 0) {
+                        this.$.header.style.display = "none";
+                    } else {
+                        var ucs = this.$.hd.querySelectorAll('unit-cell');
+                        const length = ucs.length;
+                        for (var i=0; i<length;i++) {
+                            if (this.dataHost.tagName != "TEMPLATE") {
+                                ucs[i].classList.add(this.columnHeader[i].class, this.dataHost.tagName.toLowerCase());
+                            } else {
+                                ucs[i].classList.remove("style-scope","dcache-view-datatable")
+                                ucs[i].classList.add(this.columnHeader[i].class);
+                            }
 
-                        if (this.columnHeader[i].main == true) {
-                            ucs[i].setAttribute("main", true);
+                            if (this.columnHeader[i].main == true) {
+                                ucs[i].setAttribute("main", true);
+                            }
                         }
                     }
                 }.bind(this));
@@ -320,36 +406,36 @@
             {
                 if (this._changedDataCounter == 0) {
                     Polymer.dom(this.root).querySelector('paper-spinner').active = true;
-                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "loading data ..."});
+                    this.log.push({"time":new Date().toLocaleTimeString(),"message": "loading data ..."});
                 } else {
-                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "change in the main data set, loading ..."});
+                    this.log.push({"time":new Date().toLocaleTimeString(),"message": "change in the main data set, loading ..."});
                 }
 
                 if (data === undefined || data == null) {
                     Polymer.dom(this.root).querySelector('paper-spinner').active = false;
-                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Error: loading the data or no data attached"});
+                    this.log.push({"time":new Date().toLocaleTimeString(),"message": "Error: loading the data or no data attached"});
                     this.fire('errorLoadingData', {});
                 } else if (data.length == 0) {
                     Polymer.dom(this.root).querySelector('paper-spinner').active = false;
-                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Done! Data loaded. Empty data"});
-                    this.currentViewpointData = [];
+                    this.log.push({"time":new Date().toLocaleTimeString(),"message": "Done! Data loaded. Empty data"});
+                    this._currentViewpointData = [];
                     this.fire('emptyData', {});
                 } else {
                     if (data.length > 100) {
-                        this.currentViewpointData = data.slice(this._iStart, this._iEnd);
-                        this._preferOrder(this.currentViewpointData);
-                        //this.sometext = "1-100 of " + this.data.length;
+                        this._currentViewpointData = data.slice(this._iStart, this._iEnd);
+                        this._preferOrder(this._currentViewpointData);
+                        //this._currntRangeDisplayText = "1-100 of " + this.data.length;
                     } else {
-                        this.currentViewpointData = data;
-                        this._preferOrder(this.currentViewpointData);
-                        // this.sometext = "1-" + this.data.length;
+                        this._currentViewpointData = data;
+                        this._preferOrder(this._currentViewpointData);
+                        // this._currntRangeDisplayText = "1-" + this.data.length;
                         this.$.next.disabled = true;
                         this.$.last.disabled = true;
                         this.$.first.disabled = true;
                         this.$.previous.disabled = true;
                     }
                     Polymer.dom(this.root).querySelector('paper-spinner').active = false;
-                    this.statusMessages.push({"time":new Date().toLocaleTimeString(),"message": "Done! data loaded"});
+                    this.log.push({"time":new Date().toLocaleTimeString(),"message": "Done! data loaded"});
                 }
                 this._changedDataCounter++
             },
@@ -410,8 +496,8 @@
             {
                 e.stopPropagation();
                 var id = '#'+e.model.item.key;
-                this.key = e.model.item.key;
-                this.tooltips = e.model.item.tooltips;
+                this.key = e.model.item.key || '';
+                this.tooltipText = e.model.item.tooltip;
                 this.$.hd.querySelector(id).querySelector('iron-icon').classList.remove("hide");
                 this.$.hd.querySelector(id).querySelector('iron-icon').classList.add("hoverIcon");
                 e.stopPropagation();
@@ -450,14 +536,14 @@
             _preferOrder: function(arr)
             {
                 if ( this._sortingStatus === undefined) {
-                    this.currentViewpointData = arr;
+                    this._currentViewpointData = arr;
                 } else {
                     var name = this._sortingStatus.columnName; 
                     var type =this._sortingStatus.dataType; 
                     if (this._sortingStatus.order == 'asc') {
-                        this.currentViewpointData = this._compare(name, type, arr);
+                        this._currentViewpointData = this._compare(name, type, arr);
                     } else {
-                        this.currentViewpointData = this._compare(name, type, arr).reverse();
+                        this._currentViewpointData = this._compare(name, type, arr).reverse();
                     }
                 }
             },
@@ -469,7 +555,7 @@
                 var arr = this.data.slice(this._iStart, this._iEnd);
                 this._preferOrder(arr);
 
-                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this._currntRangeDisplayText = (+this._iStart + 1) + "-" + (+this._iStart+this._currentViewpointData.length) + " of " + (this.data.length);
                 if ( +this._noOfRowsPerPage >= this.data.length && this.data.length <= this._iEnd ) {
                     this.$.next.disabled = true;
                     this.$.last.disabled = true;
@@ -491,7 +577,7 @@
                 this.$.first.disabled = true;
                 this.$.previous.disabled = true;
 
-                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this._currntRangeDisplayText = (+this._iStart + 1) + "-" + (+this._iStart+this._currentViewpointData.length) + " of " + (this.data.length);
             },
             _last: function()
             {
@@ -512,7 +598,13 @@
                 this.$.last.disabled = true;
                 this.$.first.disabled = false;
                 this.$.previous.disabled = false;
-                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this._currntRangeDisplayText = (+this._iStart + 1) + "-" + (+this._iStart+this._currentViewpointData.length) + " of " + (this.data.length);
+                /**
+                 * This is an event that will be fired when either the `fastforward` or `next` 
+                 * button is clicked.
+                 * 
+                 * @event next
+                 */
                 this.fire('next', {});
             },
             _next: function()
@@ -530,7 +622,7 @@
                 this.$.first.disabled = false;
                 this.$.previous.disabled = false;
 
-                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this._currntRangeDisplayText = (+this._iStart + 1) + "-" + (+this._iStart+this._currentViewpointData.length) + " of " + (this.data.length);
                 this.fire('next', {});
             },
             _previous: function()
@@ -548,8 +640,17 @@
                 this.$.next.disabled = false;
                 this.$.last.disabled = false;
 
-                this.sometext = (+this._iStart + 1) + "-" + (+this._iStart+this.currentViewpointData.length) + " of " + (this.data.length);
+                this._currntRangeDisplayText = (+this._iStart + 1) + "-" + (+this._iStart+this._currentViewpointData.length) + " of " + (this.data.length);
             },
+
+            /**
+             * Use to open a dialog box that can be use to edit a unit data. Esc key
+             * will remove the dialog box and an Enter will trigger an event called
+             * edit (see `edit event` for details). See the example above on how to
+             * use this method.
+             *  
+             * @param {event} event passed event that call this method.
+             */
             inlineEditorDialogBox: function(event) 
             {
                 var dialog = this.$.dialogBox;
@@ -572,6 +673,12 @@
             },
             _edit: function(e, detail)
             {
+                /**
+                 * This is an event listner that will be fired when keyboard enter button is 
+                 * pressed. This can be use to send the new value to the server side.
+                 * 
+                 * @event edit
+                 */
                 this.fire('edit', {newValue: this.newValue});
             },
             _selectedItemsChanged: function(e)
