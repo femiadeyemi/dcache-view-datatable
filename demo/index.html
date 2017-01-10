@@ -7,84 +7,33 @@
     <title>dcache-view-datatable demo</title>
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <!--<link rel="import" href="../../iron-icon/iron-icon.html">
-    <link rel="import" href="../../iron-ajax/iron-ajax.html">
-    <link rel="import" href="../dcache-view-datatable-icons.html">
-
-    <link rel="import" href="../unit-cell.html">
-    <link rel="import" href="../editable-unit-cell.html">
-
-    <link rel="import" href="../table-row.html">
-    <link rel="import" href="../dcache-view-datatable.html">
-    <link rel="import" href="../table-row.html">-->
-    <link rel="import" href="x-element.html">
+    <link rel="import" href="../../paper-styles/demo-pages.html">
 
     <style is="custom-style">
-      body {
-        margin: 0px;
-        background: #ececec;
+      a {
+        display: block;
+        margin-bottom: 10px;
       }
-      /*dcache-view-datatable {
-            margin: 10px !important;
-            width: 100vw;
-        }
-        dcache-view-datatable > table-row, dcache-view-datatable > table-row[header] {
-            width: 100%;
-        }
-        table-row .a, table-row[header] unit-cell:nth-child(1) {
-            width: 40%;
-        }
-        table-row .b, table-row[header] unit-cell:nth-child(2) {
-            width: 30%;
-        }
-        table-row .c, table-row[header] unit-cell:nth-child(3) {
-            width: 30%;*/
-        }
+      li {
+        list-style: none;
+      }
     </style>
   </head>
   <body>
-
-    <x-element></x-element>
-
-      
-    <!--<script>
-      var x = document.getElementById('xhr');
-      console.log(x.lastResponse);
-    </script>-->
-
-    <!--<template is="dom-bind">
-      <iron-ajax url="dummy.json" last-response="{{data}}" auto></iron-ajax>
-      <dcache-view-datatable data='[[data]]' 
-            column-header='[
-                {"name":"name","width":"40%","class":"a"}, 
-                {"name":"email","width":"30%","class":"b","main":true},
-                {"name":"phone","width":"30%","class":"c"}
-            ]'>
-        <template>
-          <table-row>
-            <unit-cell class="a">
-              <span>[[data.name]]</span>
-            </unit-cell>
-            <unit-cell class="b">
-              <span>[[data.email]]</span>
-            </unit-cell>
-            <unit-cell class="c">
-              <span>[[data.phone]]</span>
-            </unit-cell>
-          </table-row>
-        </template>
-      </dcache-view-datatable>
-    </template>-->
-    <!--<dcache-view-datatable data='[{"name": "Bob"}, {"name": "Tim"},{"name": "Mike"}]'>
-      <template>
-        <table-row>
-          <unit-cell>
-            <span>[[data.name]]</span>
-          </unit-cell>
-        </table-row>
-      </template>
-    </dcache-view-datatable>  -->
-    
-    
+    <div class="horizontal-section-container">
+      <div>
+        <h4>dcache-view-datatable demos</h4>
+        <ul class="horizontal-section">
+          <li>
+            <a href="basic-without-header.html" target="_blank">
+              Basic data-table with no header and no styling
+            </a>
+          </li>
+          <li><a href="basic.html" target="_blank">Basic data-table with header</a></li>
+          <li><a href="full-usage.html" target="_blank">dcache-view-datatable as </a></li>
+          <li><a href="large-data.html" target="_blank">Loading large set of data</a></li>
+        </ul>
+      </div>
+    </div>
   </body>
 </html>

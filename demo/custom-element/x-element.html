@@ -1,7 +1,7 @@
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../polymer/polymer.html">
+<link rel="import" href="../../../iron-ajax/iron-ajax.html">
 
-<link rel="import" href="../dcache-view-datatable.html">
+<link rel="import" href="../../dcache-view-datatable.html">
 
 <dom-module id="x-element">
     <style>
@@ -33,14 +33,14 @@
         }
     </style>
     <template>
-      <iron-ajax url="dummy.json" last-response="{{data}}" auto></iron-ajax>
+      <iron-ajax url="../data/dummy.json" last-response="{{data}}" auto></iron-ajax>
       <dcache-view-datatable data='[[data]]' 
             column-header='[
-                {"name":"index","class":"a0","tooltips":"index","key":"index","dataType":"number"}, 
-                {"name":"name","class":"a","tooltips":"user full name","key":"name","dataType":"String", "main":true}, 
-                {"name":"address","class":"b","tooltips":"address","key":"address","dataType":"String"},
-                {"name":"phone","class":"b2","tooltips":"phone","key":"phone","dataType":"String"},
-                {"name":"age","class":"c","tooltips":"user age","key":"age","dataType":"number"}
+                {"name":"index","class":"a0","tooltip":"index","key":"index","dataType":"number"}, 
+                {"name":"name","class":"a","tooltip":"user full name","key":"name","dataType":"String", "main":true}, 
+                {"name":"address","class":"b","tooltip":"address","key":"address","dataType":"String"},
+                {"name":"phone","class":"b2","tooltip":"phone","key":"phone","dataType":"String"},
+                {"name":"age","class":"c","tooltip":"user age","key":"age","dataType":"number"}
             ]'>
         <template>
           <table-row selected$="[[_computedClass(selected)]]">
